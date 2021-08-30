@@ -3,13 +3,14 @@ package com.weiyuze.tank.net;
 import com.weiyuze.tank.Dir;
 import com.weiyuze.tank.Group;
 import com.weiyuze.tank.Tank;
+import com.weiyuze.tank.TankFrame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
-public class TankJoinMsg {
+public class TankJoinMsg extends Msg{
     public int x, y;
     public Dir dir;
     public boolean moving;
@@ -52,6 +53,7 @@ public class TankJoinMsg {
     //用JDK自带来写 可复用
     //"123" UTF-8 3个字节 “123456” 6个字节 ；123 4个字节，123456 4个字节
     //一个字节8位
+    @Override
     public byte[] toBytes() {
         ByteArrayOutputStream baos = null;//往字节数组里写
         DataOutputStream dos = null;//专门用来写数据
@@ -86,4 +88,26 @@ public class TankJoinMsg {
                 ", id=" + id +
                 '}';
     }
+
+    @Override
+    public void handle() {
+        if (this.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
+                TankFrame.INSTANCE.findByUUID(this.id) != null) return;
+        System.out.println(this);
+        Tank t = new Tank(this);
+        TankFrame.INSTANCE.addTank(t);
+
+        //send a new TankJoinMsg to the new joined tank
+        Client.INSTENCE.send(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+        //ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
+    }
+
+    //TCP:顺序固定
+    //保证传递可靠：客户端发送给服务器 转发给别人 需要确认：服务器发确认 否则会一直重发；服务器发送给客户端同理
+    //不允许丢包
+    //连接三次握手 断开四次挥手
+    //海岛奇兵 战棋类
+
+    //UDP:可丢包 瞬移
+    //CS 实时对战
 }

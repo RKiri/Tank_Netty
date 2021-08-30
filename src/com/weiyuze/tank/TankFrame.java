@@ -68,6 +68,7 @@ public class TankFrame extends Frame {
 
         //Map存储 画的时候需要做迭代
         //转换为流 对每一个数据进行处理 将数据拿出来调paint()
+        //1.8接口 加了default(消息类型)的实现 lambda兼容以前的接口
         tanks.values().stream().forEach((e)->e.paint(g));
 
         //上面替换下面的for循环

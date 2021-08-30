@@ -12,13 +12,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.ReferenceCountUtil;
 
 public class Client {
+    public static final Client INSTENCE = new Client();
     //Client类保存并初始化Channel 1
     private Channel channel = null;
 
-    public static void main(String[] args) throws InterruptedException {
+    //写成符合单例模式
+    private Client(){}
+    /*public static void main(String[] args) throws InterruptedException {
         Client c = new Client();
         c.connect();
-    }
+    }*/
 
     //改造Client 暴露调用接口
     public void connect() {
@@ -55,18 +58,20 @@ public class Client {
     }
 
     //封装Client.send(String msg)函数
-    void send(String msg) {
-        ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
-        channel.writeAndFlush(buf);
+    void send(TankJoinMsg msg) {
+       /* ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
+        channel.writeAndFlush(buf);*/
+       channel.writeAndFlush(msg);
     }
 
     public void closeConnect() {
         //通知服务器要退出
-        send("_bye_");
+//        send("_bye_");
     }
 }
 
 class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
+
 
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
@@ -84,16 +89,14 @@ class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
     //1.判断是不是自己 如果是 不处理
     //2.坦克列表判断是否已经有 有的话不处理
     //3.接收到任何msg 发自己的一个TankJoinMsg
+
+    //多种消息
+    //构建消息的继承体系 父类Msg
+    //拿到消息Msg后处理 先decode 消息头判断是什么消息类型
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TankJoinMsg msg) throws Exception {
-        if (msg.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
-                TankFrame.INSTANCE.findByUUID(msg.id) != null) return;
-        System.out.println(msg);
-        Tank t = new Tank(msg);
-        TankFrame.INSTANCE.addTank(t);
+        msg.handle();
 
-        //send a new TankJoinMsg to the new joined tank
-        ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
     }
 
     @Override

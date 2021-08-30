@@ -33,8 +33,7 @@ public class Main {
         }).start();
 
         //在主线程做网络连接
-        Client c = new Client();
-        c.connect();
+        Client.INSTENCE.connect();
 
     }
 }
