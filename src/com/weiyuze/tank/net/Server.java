@@ -1,7 +1,6 @@
 package com.weiyuze.tank.net;
 
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
@@ -26,7 +25,7 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                                    .addLast(new TankMsgDecoder())
+                                    .addLast(new TankJoinMsgDecoder())
                                     .addLast(new ServerChildHandler());
                         }
                     })
@@ -64,7 +63,7 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         try {
-            TankMsg tm = (TankMsg) msg;
+            TankJoinMsg tm = (TankJoinMsg) msg;
             System.out.println(tm);
         } finally {
             ReferenceCountUtil.release(msg);

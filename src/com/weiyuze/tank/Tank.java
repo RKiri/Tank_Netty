@@ -2,6 +2,7 @@ package com.weiyuze.tank;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.UUID;
 
 public class Tank {
     private int x, y;
@@ -14,6 +15,7 @@ public class Tank {
     private Group group = Group.BAD;
     public static int WIDTH = ResourceMgr.goodTankU.getWidth();
     public static int HEIGHT = ResourceMgr.goodTankU.getHeight();
+    UUID id = UUID.randomUUID();
     Rectangle rect = new Rectangle();
 
     public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {

@@ -54,9 +54,9 @@ public class TankFrame extends Frame {
     public void paint(Graphics g) {
         Color c = g.getColor();
         g.setColor(Color.white);
-        g.drawString("×Óµ¯µÄÊıÁ¿" + bullets.size(), 10, 60);
-        g.drawString("µĞÈËµÄÊıÁ¿" + tanks.size(), 10, 80);
-        g.drawString("±¬Õ¨µÄÊıÁ¿" + explodes.size(), 10, 100);
+        g.drawString("å­å¼¹çš„æ•°é‡" + bullets.size(), 10, 60);
+        g.drawString("æ•Œäººçš„æ•°é‡" + tanks.size(), 10, 80);
+        g.drawString("çˆ†ç‚¸çš„æ•°é‡" + explodes.size(), 10, 100);
         g.setColor(c);
         myTank.paint(g);
         for (int i = 0; i < bullets.size(); i++) {
