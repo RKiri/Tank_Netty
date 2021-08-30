@@ -5,10 +5,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 public class TankFrame extends Frame {
 
@@ -17,7 +15,8 @@ public class TankFrame extends Frame {
     Random r = new Random();
     Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.DOWN, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
-    List<Tank> tanks = new ArrayList<>();
+    //找Tank里是否包含某个UUID 只要找到UUID就找到了Tank 速度快 简单
+    Map<UUID,Tank> tanks = new HashMap<>();
     List<Explode> explodes = new ArrayList<>();
     static final int GAME_WIDTH = 1080, GAME_HEIGHT = 960;
 
@@ -67,9 +66,14 @@ public class TankFrame extends Frame {
             bullets.get(i).paint(g);
         }
 
-        for (int i = 0; i < tanks.size(); i++) {
-            tanks.get(i).paint(g);
-        }
+        //Map存储 画的时候需要做迭代
+        //转换为流 对每一个数据进行处理 将数据拿出来调paint()
+        tanks.values().stream().forEach((e)->e.paint(g));
+
+        //上面替换下面的for循环
+//        for (int i = 0; i < tanks.size(); i++) {
+//            tanks.get(i).paint(g);
+//        }
 
         for (int i = 0; i < explodes.size(); i++) {
             explodes.get(i).paint(g);
@@ -91,6 +95,14 @@ public class TankFrame extends Frame {
 //        for(Bullet b : bullets){
 //            b.paint(g);
 //        }
+    }
+
+    public Tank findByUUID(UUID id) {
+        return tanks.get(id);
+    }
+
+    public void addTank(Tank t) {
+        tanks.put(t.getId(),t);
     }
 
 

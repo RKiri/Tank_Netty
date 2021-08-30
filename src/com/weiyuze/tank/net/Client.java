@@ -1,5 +1,6 @@
 package com.weiyuze.tank.net;
 
+import com.weiyuze.tank.Tank;
 import com.weiyuze.tank.TankFrame;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -80,9 +81,19 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 //只有一种消息 用泛型指定
 class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
     //messageReceived Netty5被废掉
+    //1.判断是不是自己 如果是 不处理
+    //2.坦克列表判断是否已经有 有的话不处理
+    //3.接收到任何msg 发自己的一个TankJoinMsg
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TankJoinMsg msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, TankJoinMsg msg) throws Exception {
+        if (msg.id.equals(TankFrame.INSTANCE.getMainTank().getId()) ||
+                TankFrame.INSTANCE.findByUUID(msg.id) != null) return;
         System.out.println(msg);
+        Tank t = new Tank(msg);
+        TankFrame.INSTANCE.addTank(t);
+
+        //send a new TankJoinMsg to the new joined tank
+        ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
     }
 
     @Override
@@ -91,11 +102,6 @@ class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
         //ctx.writeAndFlush(buf);
 
         ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
-    }
-
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-       System.out.println(msg);
     }
 
 }
