@@ -15,6 +15,15 @@ public class Tank {
     private Group group = Group.BAD;
     public static int WIDTH = ResourceMgr.goodTankU.getWidth();
     public static int HEIGHT = ResourceMgr.goodTankU.getHeight();
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     UUID id = UUID.randomUUID();
     Rectangle rect = new Rectangle();
 

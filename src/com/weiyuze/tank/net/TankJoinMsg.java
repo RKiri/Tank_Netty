@@ -2,6 +2,7 @@ package com.weiyuze.tank.net;
 
 import com.weiyuze.tank.Dir;
 import com.weiyuze.tank.Group;
+import com.weiyuze.tank.Tank;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -14,6 +15,15 @@ public class TankJoinMsg {
     public boolean moving;
     public Group group;
     public UUID id;
+
+    public TankJoinMsg(Tank t) {//通过坦克初始化msg
+        this.x = t.getX();
+        this.y = t.getY();
+        this.dir = t.getDir();
+        this.moving = t.isMoving();
+        this.group = t.getGroup();
+        this.id = t.getId();
+    }
 
     public TankJoinMsg(int x, int y, Dir dir, boolean moving, Group group, UUID id) {
         this.x = x;

@@ -1,5 +1,6 @@
 package com.weiyuze.tank.net;
 
+import com.weiyuze.tank.TankFrame;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -69,7 +70,8 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ch.pipeline()
-                .addLast(new TankJoinMsgEncoder())
+                .addLast(new TankJoinMsgEncoder())//多个时 有先后顺序
+                .addLast(new TankJoinMsgDecoder())
                 .addLast(new ClientHandler());
     }
 
@@ -81,7 +83,7 @@ class ClientHandler extends ChannelInboundHandlerAdapter {
         //ByteBuf buf = Unpooled.copiedBuffer("hello".getBytes());
         //ctx.writeAndFlush(buf);
 
-        //ctx.writeAndFlush(new TankJoinMsg(5,8));
+        ctx.writeAndFlush(new TankJoinMsg(TankFrame.INSTANCE.getMainTank()));
     }
 
     @Override

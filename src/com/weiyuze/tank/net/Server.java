@@ -25,7 +25,6 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline()
-                                    .addLast(new TankJoinMsgDecoder())
                                     .addLast(new ServerChildHandler());
                         }
                     })
@@ -62,31 +61,8 @@ class ServerChildHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        try {
-            TankJoinMsg tm = (TankJoinMsg) msg;
-            System.out.println(tm);
-        } finally {
-            ReferenceCountUtil.release(msg);
-        }
 
-
-        /*ByteBuf buf = (ByteBuf) msg;
-        byte[] bytes = new byte[buf.readableBytes()];
-        buf.getBytes(buf.readerIndex(), bytes);
-        //System.out.println(new String(bytes));
-        String s = new String(bytes);
-
-        ServerFrame.INSTANCE.updateClientMsg(s);
-        //服务器接收到特定消息进行处理
-        //服务器移除channel并关闭ctx
-        if (s.equals("_bye_")) {
-            ServerFrame.INSTANCE.updateServerMsg("客户端要求退出");
-            //System.out.println("客户端要求退出");
-            Server.clients.remove(ctx.channel());
-            ctx.close();
-        } else {
-            Server.clients.writeAndFlush(msg);
-        }*/
+        Server.clients.writeAndFlush(msg);
 
     }
 

@@ -11,6 +11,8 @@ import java.util.List;
 
 public class TankFrame extends Frame {
 
+    public static final TankFrame INSTANCE = new TankFrame();
+
     Tank myTank = new Tank(200, 900, Dir.UP, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
     List<Tank> tanks = new ArrayList<>();
@@ -157,5 +159,8 @@ public class TankFrame extends Frame {
                 if (bD) myTank.setDir(Dir.DOWN);
             }
         }
+    }
+    public Tank getMainTank(){
+        return myTank;
     }
 }
