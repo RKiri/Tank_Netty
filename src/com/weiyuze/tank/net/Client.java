@@ -20,7 +20,7 @@ public class Client {
     }
 
     //改造Client 暴露调用接口
-    void connect() {
+    public void connect() {
         EventLoopGroup group = new NioEventLoopGroup(1);
         Bootstrap b = new Bootstrap();
 
@@ -54,7 +54,7 @@ public class Client {
     }
 
     //封装Client.send(String msg)函数
-    void send(String msg){
+    void send(String msg) {
         ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
         channel.writeAndFlush(buf);
     }
@@ -77,7 +77,14 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 
 }
 
-class ClientHandler extends ChannelInboundHandlerAdapter {
+//只有一种消息 用泛型指定
+class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
+    //messageReceived Netty5被废掉
+    @Override
+    protected void channelRead0(ChannelHandlerContext channelHandlerContext, TankJoinMsg msg) throws Exception {
+        System.out.println(msg);
+    }
+
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         //ByteBuf buf = Unpooled.copiedBuffer("hello".getBytes());
@@ -88,19 +95,7 @@ class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ByteBuf buf = null;
-        try {
-            buf = (ByteBuf) msg;
-            byte[] bytes = new byte[buf.readableBytes()];
-            buf.getBytes(buf.readerIndex(), bytes);
-            String msgAccepted = new String(bytes);//服务器反馈回来的字符串
-            //client端接收到channelRead后 拿到单例 更新界面
-            //ClientFrame.INSTANCE.updateText(msgAccepted);
-
-            //System.out.println(new String(bytes));
-        } finally {
-            if (buf != null) ReferenceCountUtil.release(buf);
-        }
-
+       System.out.println(msg);
     }
+
 }

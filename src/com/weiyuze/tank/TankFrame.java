@@ -8,12 +8,14 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 public class TankFrame extends Frame {
 
     public static final TankFrame INSTANCE = new TankFrame();
 
-    Tank myTank = new Tank(200, 900, Dir.UP, Group.GOOD, this);
+    Random r = new Random();
+    Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.DOWN, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
     List<Tank> tanks = new ArrayList<>();
     List<Explode> explodes = new ArrayList<>();
@@ -22,7 +24,7 @@ public class TankFrame extends Frame {
     public TankFrame() {
         setSize(GAME_WIDTH, GAME_HEIGHT);
         setResizable(false);
-        setVisible(true);
+        //setVisible(true);
         setTitle("Tank war");
 
         this.addKeyListener(new MyKeyListener());

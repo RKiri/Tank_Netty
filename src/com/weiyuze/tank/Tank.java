@@ -1,5 +1,7 @@
 package com.weiyuze.tank;
 
+import com.weiyuze.tank.net.TankJoinMsg;
+
 import java.awt.*;
 import java.util.Random;
 import java.util.UUID;
@@ -9,7 +11,7 @@ public class Tank {
     private Dir dir = Dir.DOWN;
     private static final int speed = 2;
     private TankFrame tf;
-    private boolean moving = true;
+    private boolean moving = false;
     private boolean living = true;
     private Random random = new Random();
     private Group group = Group.BAD;
@@ -27,6 +29,16 @@ public class Tank {
     UUID id = UUID.randomUUID();
     Rectangle rect = new Rectangle();
 
+
+    public Tank(TankJoinMsg msg) {
+        this.x = msg.x;
+        this.y = msg.y;
+        this.dir = msg.dir;
+        this.moving = msg.moving;
+        this.group = msg.group;
+        this.id = msg.id;
+    }
+
     public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
@@ -42,6 +54,12 @@ public class Tank {
 
     public void paint(Graphics g) {
         if (!living) tf.tanks.remove(this);
+        //uuid on head
+        Color c = g.getColor();
+        g.setColor(Color.yellow);
+        g.drawString(id.toString(),x,y-10);
+        g.setColor(c);
+
         switch (dir) {
             case LEFT:
                 g.drawImage(this.group == Group.GOOD ? ResourceMgr.goodTankL : ResourceMgr.badTankL, x, y, null);
