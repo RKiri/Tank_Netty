@@ -58,7 +58,7 @@ public class Client {
     }
 
     //封装Client.send(String msg)函数
-    void send(TankJoinMsg msg) {
+    void send(Msg msg) {
        /* ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
         channel.writeAndFlush(buf);*/
        channel.writeAndFlush(msg);
@@ -84,7 +84,7 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
 }
 
 //只有一种消息 用泛型指定
-class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
+class ClientHandler extends SimpleChannelInboundHandler<Msg> {
     //messageReceived Netty5被废掉
     //1.判断是不是自己 如果是 不处理
     //2.坦克列表判断是否已经有 有的话不处理
@@ -94,7 +94,7 @@ class ClientHandler extends SimpleChannelInboundHandler<TankJoinMsg> {
     //构建消息的继承体系 父类Msg
     //拿到消息Msg后处理 先decode 消息头判断是什么消息类型
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, TankJoinMsg msg) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, Msg msg) throws Exception {
         msg.handle();
 
     }

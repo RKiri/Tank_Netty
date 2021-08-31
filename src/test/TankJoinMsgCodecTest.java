@@ -1,5 +1,6 @@
 package test;
 
+import com.weiyuze.tank.net.MsgType;
 import com.weiyuze.tank.net.TankJoinMsg;
 import com.weiyuze.tank.net.TankJoinMsgDecoder;
 import com.weiyuze.tank.net.TankJoinMsgEncoder;
@@ -31,6 +32,12 @@ class TankJoinMsgCodecTest {
 
         ByteBuf buf = (ByteBuf) ch.readOutbound();
 
+        MsgType msgType = MsgType.values()[buf.readInt()];
+        assertEquals(MsgType.TankJoin, msgType);
+
+        int length = buf.readInt();
+        assertEquals(33,length);
+
         int x = buf.readInt();
         int y = buf.readInt();
         int dirOrdinal = buf.readInt();
@@ -58,7 +65,11 @@ class TankJoinMsgCodecTest {
         ch.pipeline().addLast(new TankJoinMsgDecoder());
 
         ByteBuf buf = Unpooled.buffer();
-        buf.writeBytes(msg.toBytes());
+
+        buf.writeInt(MsgType.TankJoin.ordinal());
+        byte[] bytes = msg.toBytes();
+        buf.writeInt(bytes.length);
+        buf.writeBytes(bytes);
 
         ch.writeInbound(buf.duplicate());//拷贝一个新对象，在新对象上修改不会影响前对象
 

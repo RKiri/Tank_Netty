@@ -14,18 +14,28 @@ public class TankJoinMsgDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         //TCP 拆包 粘包的问题；消息多长 够长处理；不够长return 等长度确定
         //4+4+4+1+4+16
-        if (in.readableBytes() < 33) return;
+        //if (in.readableBytes() < 33) return;
+        if (in.readableBytes() < 8) return;
 
-        TankJoinMsg msg = new TankJoinMsg();//调的空的 初始值没有确定
+        MsgType msgType = MsgType.values()[in.readInt()];
+        int length = in.readInt();
 
-        msg.x = in.readInt();
-        msg.y = in.readInt();
-        msg.dir = Dir.values()[in.readInt()];
-        msg.moving = in.readBoolean();
-        msg.group = Group.values()[in.readInt()];
-        msg.id = new UUID(in.readLong(),in.readLong());
+        if (in.readableBytes() < length) {
+            in.resetReaderIndex();//in回到最早读指针标记位置 0位置 重置读指针
+            return;//return后下一次执行从decode执行
+        }
 
-        //消息解析出来的对象 装进List
-        out.add(msg);
+        byte[] bytes = new byte[length];//内存中new字节数组 将字节数组扔给buf
+        in.readBytes(bytes);//把字节数组读满 相当于复制过来
+
+        switch (msgType) {
+            case TankJoin:
+                TankJoinMsg msg = new TankJoinMsg();//调的空的 初始值没有确定
+                msg.parse(bytes);
+                out.add(msg);//消息解析出来的对象 装进List
+                break;
+            default:
+                break;
+        }
     }
 }
