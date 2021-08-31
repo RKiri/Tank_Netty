@@ -1,15 +1,11 @@
 package com.weiyuze.tank.net;
 
-import com.weiyuze.tank.Tank;
 import com.weiyuze.tank.TankFrame;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.util.ReferenceCountUtil;
 
 public class Client {
     public static final Client INSTENCE = new Client();
@@ -58,7 +54,7 @@ public class Client {
     }
 
     //封装Client.send(String msg)函数
-    void send(Msg msg) {
+    public void send(Msg msg) {
        /* ByteBuf buf = Unpooled.copiedBuffer(msg.getBytes());
         channel.writeAndFlush(buf);*/
        channel.writeAndFlush(msg);
@@ -76,8 +72,8 @@ class ClientChannelInitializer extends ChannelInitializer<SocketChannel> {
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
         ch.pipeline()
-                .addLast(new TankJoinMsgEncoder())//多个时 有先后顺序
-                .addLast(new TankJoinMsgDecoder())
+                .addLast(new MsgEncoder())//多个时 有先后顺序
+                .addLast(new MsgDecoder())
                 .addLast(new ClientHandler());
     }
 
