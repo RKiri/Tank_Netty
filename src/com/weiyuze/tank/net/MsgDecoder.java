@@ -30,12 +30,17 @@ public class MsgDecoder extends ByteToMessageDecoder {
 
         Msg msg = null;
 
+        //reflection 反射
+        //Class.forName(msgType.toString() + "Msg").constructor().newInstance(); 具体包名
         switch (msgType) {
             case TankJoin:
                 msg = new TankJoinMsg();//调的空的 初始值没有确定
                 break;
             case TankStartMoving:
                 msg = new TankStartMovingMsg();
+                break;
+            case TankStop:
+                msg = new TankStopMsg();
                 break;
             default:
                 break;

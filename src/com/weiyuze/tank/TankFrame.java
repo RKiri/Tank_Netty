@@ -2,6 +2,7 @@ package com.weiyuze.tank;
 
 import com.weiyuze.tank.net.Client;
 import com.weiyuze.tank.net.TankStartMovingMsg;
+import com.weiyuze.tank.net.TankStopMsg;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -19,7 +20,7 @@ public class TankFrame extends Frame {
     Tank myTank = new Tank(r.nextInt(GAME_WIDTH), r.nextInt(GAME_HEIGHT), Dir.DOWN, Group.GOOD, this);
     List<Bullet> bullets = new ArrayList<>();
     //找Tank里是否包含某个UUID 只要找到UUID就找到了Tank 速度快 简单
-    Map<UUID,Tank> tanks = new HashMap<>();
+    Map<UUID, Tank> tanks = new HashMap<>();
     List<Explode> explodes = new ArrayList<>();
     static final int GAME_WIDTH = 1080, GAME_HEIGHT = 960;
 
@@ -72,7 +73,7 @@ public class TankFrame extends Frame {
         //Map存储 画的时候需要做迭代
         //转换为流 对每一个数据进行处理 将数据拿出来调paint()
         //1.8接口 加了default(消息类型)的实现 lambda兼容以前的接口
-        tanks.values().stream().forEach((e)->e.paint(g));
+        tanks.values().stream().forEach((e) -> e.paint(g));
 
         //上面替换下面的for循环
 //        for (int i = 0; i < tanks.size(); i++) {
@@ -106,7 +107,7 @@ public class TankFrame extends Frame {
     }
 
     public void addTank(Tank t) {
-        tanks.put(t.getId(),t);
+        tanks.put(t.getId(), t);
     }
 
 
@@ -167,22 +168,31 @@ public class TankFrame extends Frame {
             setMainTankDir();
         }
 
+        //调试网络程序
+        //自己发了消息 另一个没收到
+        //是否发出去
+        //服务器端是否收到
+        //服务器是否转发
         private void setMainTankDir() {
-            if (!bL & !bU & !bR & !bD) myTank.setMoving(false);
-            else {
-                myTank.setMoving(true);
+            if (!bL & !bU & !bR & !bD) {
+                myTank.setMoving(false);
+                Client.INSTENCE.send(new TankStopMsg(getMainTank()));
+            } else {
+
                 if (bL) myTank.setDir(Dir.LEFT);
                 if (bU) myTank.setDir(Dir.UP);
                 if (bR) myTank.setDir(Dir.RIGHT);
                 if (bD) myTank.setDir(Dir.DOWN);
 
                 //发出坦克移动的消息
-                Client.INSTENCE.send(new TankStartMovingMsg(getMainTank()));
-
+                if (!myTank.isMoving())
+                    Client.INSTENCE.send(new TankStartMovingMsg(getMainTank()));
+                myTank.setMoving(true);
             }
         }
     }
-    public Tank getMainTank(){
+
+    public Tank getMainTank() {
         return myTank;
     }
 }
